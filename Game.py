@@ -3,30 +3,71 @@ import pygame
 pygame.init()
 win = pygame.display.set_mode((500,500))
 
-pygame.display.set_caption("Cubes Game")
+pygame.display.set_caption("Good GAME")
+
+walkright = [pygame.image.load('sprites/right_1.png'),pygame.image.load('sprites/right_2.png'),
+            pygame.image.load('sprites/right_3.png'),pygame.image.load('sprites/right_4.png'),
+             pygame.image.load('sprites/right_5.png'),pygame.image.load('sprites/right_6.png')]
+walkleft = [pygame.image.load('sprites/left_1.png'),pygame.image.load('sprites/left_2.png'),pygame.image.load('sprites/left_3.png'),
+            pygame.image.load('sprites/left_4.png'),pygame.image.load('sprites/left_5.png'),pygame.image.load('sprites/left_6.png')]
+playerStand = pygame.image.load('sprites/idle.png')
+bg = pygame.image.load('sprites/bg.jpg')
+
+clock = pygame.time.Clock()
+
 x = 50
 y = 425
-widht = 40
-height = 60
+widht = 60
+height = 71
 speed = 5
+
+
 isJump = False
 jumpCount = 10
+
+left = False
+right = False
+animCount = 0
+
+def drawWindow():
+    global animCount
+    win.blit(bg, (0, 0))
+
+    if animCount + 1 >=30:
+        animCount = 0
+
+    if left:
+        win.blit(walkleft[animCount // 5], (x,y))
+        animCount += 1
+    elif right:
+        win.blit(walkright[animCount // 5], (x, y))
+        animCount +=1
+    else:
+        win.blit(playerStand, (x,y))
+
+    pygame.display.update()
+
 run=True
 while run:
-    pygame.time.delay(10)
+    clock.tick(30)
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             run = False
     keys = pygame.key.get_pressed()
     if keys[pygame.K_LEFT] and x>5:
         x-=speed
-    if keys[pygame.K_RIGHT] and x<500-widht -5 :
+        left = True
+        right = False
+    elif keys[pygame.K_RIGHT] and x<500-widht -5 :
         x += speed
+        left = False
+        right = True
+    else:
+        left = False
+        right = False
+        animCount = 0
+
     if not(isJump):
-        if keys[pygame.K_UP] and y>5:
-            y-= speed
-        if keys[pygame.K_DOWN] and y<500-height-15:
-            y+=speed
         if keys[pygame.K_SPACE]:
             isJump = True
     else:
@@ -39,10 +80,9 @@ while run:
         else:
             isJump = False
             jumpCount = 10
+    drawWindow()
 
 
-    win.fill((0,0,0))
-    pygame.draw.rect(win, (0,0,255), (x, y , widht, height))
-    pygame.display.update()
+
 
 pygame.quit()
